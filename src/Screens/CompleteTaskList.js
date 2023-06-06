@@ -17,20 +17,10 @@ export default function CompleteTaskList() {
   const dispatch = useDispatch();
 
   const completeTodos = useSelector(state => state.completedTodos);
-  // console.log(completeTodos);
 
   function DeleteAlert() {
     dispatch(removeCompletedGoals(key));
     alert('Goal Deleted Sucessfully');
-    // return Alert.alert('Confirm Delete', 'Are you sure ?', [
-    //   {text: 'cancel'},
-    //   {
-    //     text: 'ok',
-    //     onPress: () => {
-    //
-    //     },
-    //   },
-    // ]);
   }
 
   return (

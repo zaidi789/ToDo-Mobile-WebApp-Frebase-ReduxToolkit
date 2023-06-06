@@ -21,7 +21,6 @@ export default function Nav() {
 }
 
 const linking = {
-  // prefixes: [prefix],
   config: {
     screens: {
       Home: 'Home',

@@ -7,7 +7,6 @@ import {
   Text,
   View,
   Platform,
-  TouchableOpacity,
 } from 'react-native';
 import Button from '../components/Button';
 import {useNavigation} from '@react-navigation/native';
@@ -29,26 +28,18 @@ export default function Home() {
   const [enteredGoalText, setenteredGoalText] = useState('');
   const [goalTitle, setgoalTitle] = useState('');
   const [goalKey, setGoalKey] = useState();
-  const [completedGoals, setCompletedGoals] = useState([]);
   const [editGoalIndex, setEditGoalIndex] = useState(-1);
   const [titleError, setTitleError] = useState(false);
   const [desError, setDesError] = useState(false);
   const [updateButton, setUpdateButton] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [alertModalVisible, setAlertModalVisible] = useState(false);
-  const [showAlert, setShowAlert] = useState(false);
   const [key, setDelKey] = useState();
   const dispatch = useDispatch();
 
   const todos = useSelector(state => state.todos);
 
   const completeTodos = useSelector(state => state.completedTodos);
-
-  // const deleteCompleteGoal = key => {
-  //   setCompletedGoals(currentGoal => {
-  //     return currentGoal.filter(goal => goal.key !== key);
-  //   });
-  // };
 
   function validateTitleText() {
     if (goalTitle === '') {
@@ -73,7 +64,6 @@ export default function Home() {
   }
 
   function deleteGoal() {
-    // console.log(key);
     dispatch(removeGoal(key));
     alert('Goal Deleted Sucessfully');
   }
@@ -91,7 +81,7 @@ export default function Home() {
       setenteredGoalText('');
       setEditGoalIndex(-1);
       setIsVisible(!isVisible);
-      Alert.alert('Alert', 'Task Updated Successfully');
+      alert('Task Updated Successfully');
     } else if (enteredGoalText !== '' && goalTitle !== '') {
       let key = Math.random().toString();
       let obj = {
@@ -105,9 +95,9 @@ export default function Home() {
       setIsVisible(!isVisible);
       setDesError(false);
       setTitleError(false);
-      Alert.alert('Alert', 'Task Added Successfully');
+      alert('Alert', 'Task Added Successfully');
     } else {
-      Alert.alert(
+      alert(
         'Failed to Add',
         'Please enter a todo to add. Blank notes cannot be added.',
       );
@@ -119,14 +109,7 @@ export default function Home() {
     dispatch(removeGoal(itemData.key));
     alert('Goal added to completed goal List');
   }
-  // function deleteAlert(key) {
-  //   return setAlertModalVisible(!alertModalVisible), deleteGoal(key);
-  // }
 
-  // function deleteAlert(key) {
-  //   return setAlertModalVisible(!alertModalVisible);
-  // }
-  // console.log(key);
   return (
     <View style={styles.container}>
       <CustomAlert
@@ -158,18 +141,9 @@ export default function Home() {
           <Button buttonName={'ADD'} onPress={() => setIsVisible(!isVisible)} />
           <Button
             buttonName={'C - Task'}
-            onPress={() =>
-              navigation.navigate('CompletedGoalList', {
-                completedGoals,
-                // deleteCompleteGoal,
-              })
-            }
+            onPress={() => navigation.navigate('CompletedGoalList')}
           />
         </View>
-        {/* <Button
-          buttonName={'Test'}
-          onPress={() => setAlertModalVisible(!alertModalVisible)}
-        /> */}
 
         <View style={styles.countView}>
           <Text style={styles.countText}>
@@ -181,7 +155,6 @@ export default function Home() {
         <FlatList
           data={todos}
           renderItem={itemData => {
-            // setDelKey();
             return (
               <RenderItem
                 outputTitle={itemData?.item?.title}
@@ -260,47 +233,3 @@ const styles = StyleSheet.create({
     fontSize: isWeb ? 60 : 14,
   },
 });
-
-// import {
-//   Dimensions,
-//   Image,
-//   StyleSheet,
-//   Text,
-//   TouchableOpacity,
-//   View,
-// } from 'react-native';
-// import React from 'react';
-// import {useNavigation} from '@react-navigation/native';
-// import Images from '../Images/Images';
-// import CheckBox from '../components/CheckBox';
-// import Button from '../components/Button';
-// import Input from '../components/Input';
-
-// export default function Home() {
-//   const navigation = useNavigation();
-//   return (
-//     <View style={styles.container}>
-//       <Button
-//         buttonName={'Add'}
-//         onPress={() => navigation.navigate('Profile')}
-//       />
-//       <CheckBox />
-//       <Input />
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     height: Dimensions.get('window').height,
-//     width: Dimensions.get('window').width,
-//     // backgroundColor: 'green',
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//   },
-//   button: {
-//     flex: 1,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//   },
-// });

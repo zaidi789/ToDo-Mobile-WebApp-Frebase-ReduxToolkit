@@ -8,7 +8,7 @@ import {
   View,
   TouchableOpacity,
 } from 'react-native';
-import Button from './Button';
+
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -44,11 +44,6 @@ const CustomAlert = ({modalVisible = false, setModalVisible, onPressOK}) => {
               onPress={() => setModalVisible(!modalVisible)}>
               <Text style={styles.buttonText}>Cancel</Text>
             </TouchableOpacity>
-            {/* <Button buttonName={'OK'} onPress={onPressOK} />
-            <Button
-              buttonName={'Cancel'}
-              onPress={() => setModalVisible(!modalVisible)}
-            /> */}
           </View>
         </View>
       </View>
@@ -66,12 +61,9 @@ const styles = StyleSheet.create({
   modalView: {
     width: isWeb ? '25%' : '90%',
     height: isWeb ? '28%' : '23%',
-    // margin: wp(5),
     backgroundColor: Colors.modalBackgroundColor,
     borderRadius: isWeb ? 15 : 15,
     padding: isWeb ? 20 : 15,
-    // alignItems: 'center',
-    // justifyContent: 'center',
     shadowColor: Colors.modalShaddowcolor,
     shadowOffset: {
       width: wp(0),
@@ -80,7 +72,6 @@ const styles = StyleSheet.create({
     shadowOpacity: wp(0.1),
     shadowRadius: hp(10),
     elevation: wp(10),
-    // height: isWeb ? '60%' : '25%',
   },
   btnView: {
     flexDirection: 'row',
@@ -104,7 +95,6 @@ const styles = StyleSheet.create({
     fontSize: isWeb ? 20 : 16,
     justifyContent: 'center',
     alignItems: 'center',
-    // padding: 30,
   },
 });
 

@@ -9,8 +9,6 @@ const todoSlice = createSlice({
     },
     removeGoal(state, action) {
       const index = state.findIndex(obj => obj.key == action.payload);
-      console.log(action.payload, index, state);
-      // return state.filter(item => item.key !== action.payload);
       state.splice(index, 1);
     },
     updateTodo(state, action) {

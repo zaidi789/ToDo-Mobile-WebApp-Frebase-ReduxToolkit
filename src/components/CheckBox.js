@@ -2,7 +2,6 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
-  Dimensions,
   Platform,
   View,
 } from 'react-native';
@@ -41,11 +40,9 @@ export default function CheckBox({
 
 const styles = StyleSheet.create({
   mainIconView: {
-    // width: Dimensions.get('window').width,
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    // padding: 80,
     borderRightWidth: 2,
     borderLeftWidth: 2,
     borderBottomWidth: 2,

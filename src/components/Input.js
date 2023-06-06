@@ -19,6 +19,5 @@ export default function Input({placeholder, value, onChangeText, style}) {
 const styles = StyleSheet.create({
   goalInput: {
     height: isWeb ? hp(50) : hp(7),
-    // marginRight: 8,
   },
 });

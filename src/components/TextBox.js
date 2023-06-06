@@ -16,13 +16,7 @@ import {Colors} from './Colors';
 import Images from '../Images/Images';
 
 const isWeb = Platform.OS === 'web';
-export default function TextBox({
-  outputTitle,
-  outputDes,
-  name,
-  onPressDelete,
-  color,
-}) {
+export default function TextBox({outputTitle, outputDes, name, onPressDelete}) {
   return (
     <View style={styles.container}>
       <View

@@ -5,7 +5,6 @@ import {
   Platform,
   Dimensions,
   View,
-  KeyboardAvoidingView,
 } from 'react-native';
 import Input from './Input';
 import Button from './Button';
@@ -65,7 +64,6 @@ const styles = StyleSheet.create({
     width: isWeb ? Dimensions.get('window').width : '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    // backgroundColor: 'silver',
   },
   modalView: {
     width: isWeb ? '70%' : '90%',
