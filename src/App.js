@@ -1,39 +1,17 @@
 import * as React from 'react';
-import Nav from './Navigation';
-
-
-
+import Nav from './Navigation/index';
+import {Provider} from 'react-redux';
+import {PersistGate} from 'redux-persist/integration/react';
+import {store, persistor} from '../src/Redux/store';
 export default function App() {
   return (
-    <Nav />
+    <Provider store={store}>
+      <PersistGate persistor={persistor}>
+        <Nav />
+      </PersistGate>
+    </Provider>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // import { Dimensions, Button, StyleSheet, View, Alert } from 'react-native';
 // import React from 'react';
