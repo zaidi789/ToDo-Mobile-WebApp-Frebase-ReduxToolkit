@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "481015037270",
+    "project_id": "todowebapp-459a8",
+    "storage_bucket": "todowebapp-459a8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:481015037270:android:10882c4160fb7c78072af7",
+        "android_client_info": {
+          "package_name": "com.reactnativewebapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "481015037270-hm5ma8ae35o6j7vk9s1sfpgtf6bkk2n9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANufN7C9ilgeW8B4XJcQKAC7C680pu3Jo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "481015037270-hm5ma8ae35o6j7vk9s1sfpgtf6bkk2n9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

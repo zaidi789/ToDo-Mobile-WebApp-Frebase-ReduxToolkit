@@ -1,6 +1,6 @@
 import {configureStore} from '@reduxjs/toolkit';
 import todoSlice from './todoSlice.js';
-import completedGoalSlice from './completedGoalSlice';
+import completedGoalSlice from './completedGoalSlice.js';
 import {combineReducers} from '@reduxjs/toolkit';
 import {persistStore, persistReducer} from 'redux-persist';
 import storage from '@react-native-async-storage/async-storage';
@@ -8,7 +8,7 @@ import storage from '@react-native-async-storage/async-storage';
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['todos', 'completedTodos'],
+  blacklist: ['todos', 'completedTodos'],
 };
 const rootReducer = combineReducers({
   todos: todoSlice,

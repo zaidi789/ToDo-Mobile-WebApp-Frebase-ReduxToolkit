@@ -12,9 +12,9 @@ const todoSlice = createSlice({
       state.splice(index, 1);
     },
     updateTodo(state, action) {
-      console.log(action.payload);
+      // console.log(action.payload);
       const index = state.findIndex(obj => obj.key == action.payload.key);
-      console.log(index);
+      // console.log(index);
       if (index !== -1) {
         state[index] = {
           ...state[index],
@@ -23,8 +23,12 @@ const todoSlice = createSlice({
         };
       }
     },
+    fetchToDos(state, action) {
+      // console.log(action.payload);
+      state.push(action.payload);
+    },
   },
 });
 
-export const {addGoal, removeGoal, updateTodo} = todoSlice.actions;
+export const {addGoal, removeGoal, updateTodo, fetchToDos} = todoSlice.actions;
 export default todoSlice.reducer;

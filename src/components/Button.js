@@ -14,7 +14,7 @@ import {
 import {Colors} from './Colors';
 
 const isWeb = Platform.OS === 'web';
-export default function Button({onPress, buttonName}) {
+export default function Button({onPress, buttonName, style, stylesBtnText}) {
   return (
     <TouchableOpacity onPress={onPress} style={[styles.goalButton, style]}>
       <Text style={[styles.buttonText, stylesBtnText]}>{buttonName}</Text>

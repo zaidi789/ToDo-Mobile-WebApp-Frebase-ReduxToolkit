@@ -18,9 +18,23 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import {Colors} from '../components/Colors';
-import {addGoal, removeGoal, updateTodo} from '../Redux/todoSlice';
+import {addGoal, removeGoal, updateTodo, fetchToDos} from '../Redux/todoSlice';
 import {addCompletedGoals} from '../Redux/completedGoalSlice';
 import CustomAlert from '../components/CustomAlert';
+import {
+  collection,
+  setDoc,
+  doc,
+  addDoc,
+  getDocs,
+  getDoc,
+  getFirestore,
+} from 'firebase/firestore';
+import {db} from '../Firebase/config';
+import {getAuth} from 'firebase/auth';
+import app from '../Firebase/config';
+import uuid from 'react-native-uuid';
+// import firestore from '@react-native-firebase/firestore';
 
 const isWeb = Platform.OS === 'web';
 export default function Home() {
@@ -35,11 +49,18 @@ export default function Home() {
   const [isVisible, setIsVisible] = useState(false);
   const [alertModalVisible, setAlertModalVisible] = useState(false);
   const [key, setDelKey] = useState();
+  const [goalsArray, setGoalsArray] = useState([]);
+
+  const auth = getAuth(app);
+  const id = auth.currentUser.uid;
+  const email = auth.currentUser.email;
+  // console.log(id);
   const dispatch = useDispatch();
-
   const todos = useSelector(state => state.todos);
-
   const completeTodos = useSelector(state => state.completedTodos);
+  // console.log(todos);
+  // const usersCollection = firestore().collection('Users');
+  // const userDocument = firestore().collection('Users').doc(id);
 
   function validateTitleText() {
     if (goalTitle === '') {
@@ -54,7 +75,7 @@ export default function Home() {
   }
 
   function editGoalHandler(obj, idx) {
-    console.log(idx);
+    // console.log(idx);
     setIsVisible(true);
     setUpdateButton(true);
     setenteredGoalText(obj.text);
@@ -67,6 +88,175 @@ export default function Home() {
     dispatch(removeGoal(key));
     alert('Goal Deleted Sucessfully');
   }
+
+  const addGoalsOnCloud = async () => {
+    let listId = uuid.v4();
+    let id = uuid.v4();
+    const data = {
+      id: id,
+      title: goalTitle,
+      text: enteredGoalText,
+    };
+    try {
+      await setDoc(doc(db, 'ToDo', email, 'ToDo-List', listId), {
+        id: id,
+        title: goalTitle,
+        text: enteredGoalText,
+      });
+      dispatch(addGoal(data));
+      alert('Note successfully saved!');
+    } catch (e) {
+      console.log(e);
+      alert('Something bad happened!');
+    }
+
+    //////////////////////////////////
+    //firestore()
+    //   .collection('ToDo')
+    //   .doc(id)
+    //   .collection('ToDo-List')
+    //   .add({
+    //     Title: goalTitle,
+    //     Description: enteredGoalText,
+    //   })
+    //   .then(() => {
+    //     console.log('User added!');
+    //   });
+    //////fire store method///////////////
+    //   try {
+    //     const docRef = await addDoc(
+    //       collection(db, 'ToDo'),
+    //       {
+    //         Title: goalTitle,
+    //         Description: enteredGoalText,
+    //       },
+    //       {merge: true},
+    //     );
+    //     console.log('data uploaded', docRef.id);
+    //   } catch (error) {
+    //     console.log('something went wrong');
+    //   }
+
+    // const res = await setDoc(doc(db, 'ToDos', uid), {
+    //   Title: goalTitle,
+    //   Description: enteredGoalText,
+    // });
+    // console.log(res);
+    // try {
+    //   const newToDo = {
+    //     Title: goalTitle,
+    //     Description: enteredGoalText,
+    //     createdAt: new Date().toDateString(),
+    //   };
+    //   const resTodo = collection(db, 'ToDo', uid);
+    //   const docRef = await addDoc(resTodo, newToDo);
+    //   console.log('Created sucessfully', docRef.id);
+    // } catch (error) {
+    //   console.log(error);
+    // }
+    // const data = {
+    //   Title: goalTitle,
+    //   Description: enteredGoalText,
+    // };
+    // const res = await addDoc(collection(db, 'ToDo', uid));
+    // console.log(res);
+    // try {
+    //   const docRef = await addDoc(collection(db, 'ToDoS', user.uid), {
+    //     Title: goalTitle,
+    //     Description: enteredGoalText,
+    //   });
+    //   console.log('doc with id ', docRef.id);
+    // } catch (error) {
+    //   console.error('error adding doc', error);
+    // // }
+    // firestore()
+    //   .collection('Users')
+    //   .doc(user.uid)
+    //   .set({
+    //     Title: goalTitle,
+    //     Description: enteredGoalText,
+    //   })
+    //   .then(() => {
+    //     console.log('User added!');
+    //   });
+    // setDoc(doc(db, 'ToDoS', user.uid), {
+    //   Title: goalTitle,
+    //   Description: enteredGoalText,
+    // });
+  };
+
+  const fetchTodos = async () => {
+    // const docRef = doc(db, 'ToDoS', user);
+    // const docSnap = await getDocs(docRef);
+    // console.log('Data is', docSnap);
+    //////////////////////////////////////////////////////////////
+    // await getDocs(collection(db, 'ToDo', id, 'ToDo-List')).then(
+    //   querySnapshot => {
+    //     const newData = querySnapshot.docs.map(doc => ({
+    //       ...doc.data(),
+    //       id: doc.id,
+    //     }));
+    //     setFtoDos(newData);
+    //     console.log(ftoDos, newData);
+    //   },
+    // );
+    //////////////////////////////////////////////////////////////////////
+    const querySnapshot = await getDocs(
+      collection(db, 'ToDo', email, 'ToDo-List'),
+    );
+    try {
+      querySnapshot.forEach(doc => {
+        // const res = [];
+        const data = {
+          id: doc.id,
+          title: doc.data().title,
+          text: doc.data().text,
+        };
+        // res.push(data);
+        // console.log(doc.data());
+        dispatch(fetchToDos(doc.data()));
+      });
+    } catch (error) {
+      console.log(error);
+    }
+    //  querySnapshot.forEach(doc => {
+    //     const res = [];
+    //     const data = {
+    //       id: doc.id,
+    //       Title: doc.data().Title,
+    //       Description: doc.data().Description,
+    //     };
+    //     res.push(data);
+    //     console.log(res);
+
+    // dispatch(fetchTodos(data));
+
+    // console.log(
+    //   'data id is',
+    //   doc.id,
+    //   'data title is',
+    //   doc.data().Title,
+    //   'data des is',
+    //   doc.data().Description,
+    // );
+    // if (data.id !== doc.id) {
+    //   goalsArray.push(data);
+    //   alert('already exist');
+    // }
+
+    // const dataArray = [];
+    // dataArray.push(doc.data());
+    // ftoDos.push(doc.data());
+    // console.log(goalsArray);
+    // });
+  };
+
+  useEffect(() => {
+    fetchTodos();
+
+    // console.log(res);
+    // console.log(ftoDos);
+  }, []);
 
   function addGoalHandler() {
     if (editGoalIndex >= 0) {
@@ -89,13 +279,14 @@ export default function Home() {
         title: goalTitle,
         text: enteredGoalText,
       };
-      dispatch(addGoal(obj));
+      addGoalsOnCloud();
+
       setenteredGoalText('');
       setgoalTitle('');
       setIsVisible(!isVisible);
       setDesError(false);
       setTitleError(false);
-      alert('Alert', 'Task Added Successfully');
+      // alert('Task Added Successfully');
     } else {
       alert(
         'Failed to Add',
@@ -103,6 +294,7 @@ export default function Home() {
       );
     }
   }
+  // console.log(ftoDos);
 
   function completeGoal(itemData) {
     dispatch(addCompletedGoals(itemData));
@@ -144,6 +336,15 @@ export default function Home() {
             onPress={() => navigation.navigate('CompletedGoalList')}
           />
         </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginBottom: 10,
+            padding: 10,
+          }}>
+          <Button buttonName={'fetch data'} onPress={() => fetchTodos()} />
+        </View>
 
         <View style={styles.countView}>
           <Text style={styles.countText}>
@@ -158,7 +359,9 @@ export default function Home() {
             return (
               <RenderItem
                 outputTitle={itemData?.item?.title}
+                //make changes older was title and new is Title
                 outputDes={itemData?.item?.text}
+                //older was text new is description
                 deleteAlertOnpress={() => {
                   setDelKey(itemData.item.key);
                   setAlertModalVisible(!alertModalVisible);
