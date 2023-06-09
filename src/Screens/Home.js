@@ -29,6 +29,8 @@ import {
   getDocs,
   getDoc,
   getFirestore,
+  updateDoc,
+  deleteDoc,
 } from 'firebase/firestore';
 import {db} from '../Firebase/config';
 import {getAuth} from 'firebase/auth';
@@ -48,8 +50,9 @@ export default function Home() {
   const [updateButton, setUpdateButton] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [alertModalVisible, setAlertModalVisible] = useState(false);
-  const [key, setDelKey] = useState();
-  const [goalsArray, setGoalsArray] = useState([]);
+  const [delKey, setDelKey] = useState();
+  const [delIndex, setDelIndex] = useState();
+  const [fskey, setFsKey] = useState();
 
   const auth = getAuth(app);
   const id = auth.currentUser.uid;
@@ -58,6 +61,7 @@ export default function Home() {
   const dispatch = useDispatch();
   const todos = useSelector(state => state.todos);
   const completeTodos = useSelector(state => state.completedTodos);
+
   // console.log(todos);
   // const usersCollection = firestore().collection('Users');
   // const userDocument = firestore().collection('Users').doc(id);
@@ -75,31 +79,53 @@ export default function Home() {
   }
 
   function editGoalHandler(obj, idx) {
-    // console.log(idx);
+    // console.log(fskey);
     setIsVisible(true);
     setUpdateButton(true);
     setenteredGoalText(obj.text);
     setgoalTitle(obj.title);
     setEditGoalIndex(idx);
-    setGoalKey(obj.key);
+    setGoalKey(fskey);
   }
 
   function deleteGoal() {
-    dispatch(removeGoal(key));
+    dispatch(removeGoal(delIndex));
+    deleteGoalOnCloud();
     alert('Goal Deleted Sucessfully');
   }
+  const deleteGoalOnCloud = async () => {
+    let id = delKey;
+    const docRef = doc(db, 'ToDo', email, 'ToDo-List', id);
+    await deleteDoc(docRef);
+  };
+  const updateGoalOnCloud = async () => {
+    let id = fskey;
+    const data = {
+      title: goalTitle,
+      text: enteredGoalText,
+    };
+    const docRef = doc(db, 'ToDo', email, 'ToDo-List', id);
+    await updateDoc(docRef, data)
+      .then(() => {
+        console.log('data updated');
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
 
   const addGoalsOnCloud = async () => {
     let listId = uuid.v4();
-    let id = uuid.v4();
+
+    // let id = uuid.v4();
     const data = {
-      id: id,
+      id: listId,
       title: goalTitle,
       text: enteredGoalText,
     };
     try {
       await setDoc(doc(db, 'ToDo', email, 'ToDo-List', listId), {
-        id: id,
+        id: listId,
         title: goalTitle,
         text: enteredGoalText,
       });
@@ -213,8 +239,8 @@ export default function Home() {
           text: doc.data().text,
         };
         // res.push(data);
-        // console.log(doc.data());
-        dispatch(fetchToDos(doc.data()));
+        // console.log(data.id);
+        dispatch(fetchToDos(data));
       });
     } catch (error) {
       console.log(error);
@@ -253,6 +279,7 @@ export default function Home() {
 
   useEffect(() => {
     fetchTodos();
+    console.log(fskey);
 
     // console.log(res);
     // console.log(ftoDos);
@@ -263,9 +290,10 @@ export default function Home() {
       let updatedGoals = {
         title: goalTitle,
         text: enteredGoalText,
-        key: goalKey,
+        id: fskey,
       };
       dispatch(updateTodo(updatedGoals));
+      updateGoalOnCloud();
       setUpdateButton(false);
       setgoalTitle('');
       setenteredGoalText('');
@@ -273,12 +301,12 @@ export default function Home() {
       setIsVisible(!isVisible);
       alert('Task Updated Successfully');
     } else if (enteredGoalText !== '' && goalTitle !== '') {
-      let key = Math.random().toString();
-      let obj = {
-        key: key,
-        title: goalTitle,
-        text: enteredGoalText,
-      };
+      // let key = Math.random().toString();
+      // let obj = {
+      //   key: key,
+      //   title: goalTitle,
+      //   text: enteredGoalText,
+      // };
       addGoalsOnCloud();
 
       setenteredGoalText('');
@@ -336,7 +364,7 @@ export default function Home() {
             onPress={() => navigation.navigate('CompletedGoalList')}
           />
         </View>
-        <View
+        {/* <View
           style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
@@ -344,7 +372,7 @@ export default function Home() {
             padding: 10,
           }}>
           <Button buttonName={'fetch data'} onPress={() => fetchTodos()} />
-        </View>
+        </View> */}
 
         <View style={styles.countView}>
           <Text style={styles.countText}>
@@ -356,6 +384,7 @@ export default function Home() {
         <FlatList
           data={todos}
           renderItem={itemData => {
+            // console.log(itemData.item.id);
             return (
               <RenderItem
                 outputTitle={itemData?.item?.title}
@@ -363,12 +392,18 @@ export default function Home() {
                 outputDes={itemData?.item?.text}
                 //older was text new is description
                 deleteAlertOnpress={() => {
-                  setDelKey(itemData.item.key);
+                  setDelKey(itemData.item.id);
+                  setDelIndex(itemData.index);
                   setAlertModalVisible(!alertModalVisible);
+                  // console.log(delKey);
                 }}
                 completeGoalOnpress={() => completeGoal(itemData.item)}
                 editGoalHandlerOnpress={() =>
-                  editGoalHandler(itemData.item, itemData.index)
+                  editGoalHandler(
+                    itemData.item,
+                    itemData.index,
+                    setFsKey(itemData.item.id),
+                  )
                 }
               />
             );
@@ -401,7 +436,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   flatList: {
-    paddingBottom: 5,
+    paddingBottom: 90,
+    // backgroundColor: 'green',
   },
 
   countText: {
