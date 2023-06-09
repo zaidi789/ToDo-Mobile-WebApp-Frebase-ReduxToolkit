@@ -230,18 +230,18 @@ export default function Home() {
     const querySnapshot = await getDocs(
       collection(db, 'ToDo', email, 'ToDo-List'),
     );
+    const res = [];
     try {
       querySnapshot.forEach(doc => {
-        // const res = [];
         const data = {
           id: doc.id,
           title: doc.data().title,
           text: doc.data().text,
         };
-        // res.push(data);
+        res.push(data);
         // console.log(data.id);
-        dispatch(fetchToDos(data));
       });
+      dispatch(fetchToDos(res));
     } catch (error) {
       console.log(error);
     }

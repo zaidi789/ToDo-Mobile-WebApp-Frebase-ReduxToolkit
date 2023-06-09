@@ -8,12 +8,13 @@ const todoSlice = createSlice({
       state.push(action.payload);
     },
     removeGoal(state, action) {
-      const index = state.findIndex(obj => obj.key == action.payload);
+      console.log(action.payload);
+      const index = action.payload;
       state.splice(index, 1);
     },
     updateTodo(state, action) {
-      // console.log(action.payload);
-      const index = state.findIndex(obj => obj.key == action.payload.key);
+      console.log(action.payload);
+      const index = state.findIndex(obj => obj.id == action.payload.id);
       // console.log(index);
       if (index !== -1) {
         state[index] = {
@@ -25,7 +26,9 @@ const todoSlice = createSlice({
     },
     fetchToDos(state, action) {
       // console.log(action.payload);
-      state.push(action.payload);
+      const res = [...state, ...action.payload];
+      return res;
+      // state.push(action.payload);
     },
   },
 });
