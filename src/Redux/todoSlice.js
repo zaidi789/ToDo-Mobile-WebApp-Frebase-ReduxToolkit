@@ -25,7 +25,7 @@ const todoSlice = createSlice({
       }
     },
     fetchToDos(state, action) {
-      // console.log(action.payload);
+      console.log(action.payload);
       const res = [...state, ...action.payload];
       return res;
       // state.push(action.payload);

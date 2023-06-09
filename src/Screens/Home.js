@@ -116,8 +116,6 @@ export default function Home() {
 
   const addGoalsOnCloud = async () => {
     let listId = uuid.v4();
-
-    // let id = uuid.v4();
     const data = {
       id: listId,
       title: goalTitle,
@@ -135,98 +133,9 @@ export default function Home() {
       console.log(e);
       alert('Something bad happened!');
     }
-
-    //////////////////////////////////
-    //firestore()
-    //   .collection('ToDo')
-    //   .doc(id)
-    //   .collection('ToDo-List')
-    //   .add({
-    //     Title: goalTitle,
-    //     Description: enteredGoalText,
-    //   })
-    //   .then(() => {
-    //     console.log('User added!');
-    //   });
-    //////fire store method///////////////
-    //   try {
-    //     const docRef = await addDoc(
-    //       collection(db, 'ToDo'),
-    //       {
-    //         Title: goalTitle,
-    //         Description: enteredGoalText,
-    //       },
-    //       {merge: true},
-    //     );
-    //     console.log('data uploaded', docRef.id);
-    //   } catch (error) {
-    //     console.log('something went wrong');
-    //   }
-
-    // const res = await setDoc(doc(db, 'ToDos', uid), {
-    //   Title: goalTitle,
-    //   Description: enteredGoalText,
-    // });
-    // console.log(res);
-    // try {
-    //   const newToDo = {
-    //     Title: goalTitle,
-    //     Description: enteredGoalText,
-    //     createdAt: new Date().toDateString(),
-    //   };
-    //   const resTodo = collection(db, 'ToDo', uid);
-    //   const docRef = await addDoc(resTodo, newToDo);
-    //   console.log('Created sucessfully', docRef.id);
-    // } catch (error) {
-    //   console.log(error);
-    // }
-    // const data = {
-    //   Title: goalTitle,
-    //   Description: enteredGoalText,
-    // };
-    // const res = await addDoc(collection(db, 'ToDo', uid));
-    // console.log(res);
-    // try {
-    //   const docRef = await addDoc(collection(db, 'ToDoS', user.uid), {
-    //     Title: goalTitle,
-    //     Description: enteredGoalText,
-    //   });
-    //   console.log('doc with id ', docRef.id);
-    // } catch (error) {
-    //   console.error('error adding doc', error);
-    // // }
-    // firestore()
-    //   .collection('Users')
-    //   .doc(user.uid)
-    //   .set({
-    //     Title: goalTitle,
-    //     Description: enteredGoalText,
-    //   })
-    //   .then(() => {
-    //     console.log('User added!');
-    //   });
-    // setDoc(doc(db, 'ToDoS', user.uid), {
-    //   Title: goalTitle,
-    //   Description: enteredGoalText,
-    // });
   };
 
   const fetchTodos = async () => {
-    // const docRef = doc(db, 'ToDoS', user);
-    // const docSnap = await getDocs(docRef);
-    // console.log('Data is', docSnap);
-    //////////////////////////////////////////////////////////////
-    // await getDocs(collection(db, 'ToDo', id, 'ToDo-List')).then(
-    //   querySnapshot => {
-    //     const newData = querySnapshot.docs.map(doc => ({
-    //       ...doc.data(),
-    //       id: doc.id,
-    //     }));
-    //     setFtoDos(newData);
-    //     console.log(ftoDos, newData);
-    //   },
-    // );
-    //////////////////////////////////////////////////////////////////////
     const querySnapshot = await getDocs(
       collection(db, 'ToDo', email, 'ToDo-List'),
     );
@@ -245,44 +154,11 @@ export default function Home() {
     } catch (error) {
       console.log(error);
     }
-    //  querySnapshot.forEach(doc => {
-    //     const res = [];
-    //     const data = {
-    //       id: doc.id,
-    //       Title: doc.data().Title,
-    //       Description: doc.data().Description,
-    //     };
-    //     res.push(data);
-    //     console.log(res);
-
-    // dispatch(fetchTodos(data));
-
-    // console.log(
-    //   'data id is',
-    //   doc.id,
-    //   'data title is',
-    //   doc.data().Title,
-    //   'data des is',
-    //   doc.data().Description,
-    // );
-    // if (data.id !== doc.id) {
-    //   goalsArray.push(data);
-    //   alert('already exist');
-    // }
-
-    // const dataArray = [];
-    // dataArray.push(doc.data());
-    // ftoDos.push(doc.data());
-    // console.log(goalsArray);
-    // });
   };
 
   useEffect(() => {
     fetchTodos();
     console.log(fskey);
-
-    // console.log(res);
-    // console.log(ftoDos);
   }, []);
 
   function addGoalHandler() {
@@ -301,14 +177,7 @@ export default function Home() {
       setIsVisible(!isVisible);
       alert('Task Updated Successfully');
     } else if (enteredGoalText !== '' && goalTitle !== '') {
-      // let key = Math.random().toString();
-      // let obj = {
-      //   key: key,
-      //   title: goalTitle,
-      //   text: enteredGoalText,
-      // };
       addGoalsOnCloud();
-
       setenteredGoalText('');
       setgoalTitle('');
       setIsVisible(!isVisible);
@@ -316,10 +185,7 @@ export default function Home() {
       setTitleError(false);
       // alert('Task Added Successfully');
     } else {
-      alert(
-        'Failed to Add',
-        'Please enter a todo to add. Blank notes cannot be added.',
-      );
+      alert('Please enter a todo to add. Blank notes cannot be added.');
     }
   }
   // console.log(ftoDos);
