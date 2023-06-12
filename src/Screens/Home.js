@@ -7,6 +7,7 @@ import {
   Text,
   View,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import Button from '../components/Button';
 import {useNavigation} from '@react-navigation/native';
@@ -43,7 +44,7 @@ export default function Home() {
   const navigation = useNavigation();
   const [enteredGoalText, setenteredGoalText] = useState('');
   const [goalTitle, setgoalTitle] = useState('');
-  const [goalKey, setGoalKey] = useState();
+  // const [goalKey, setGoalKey] = useState();
   const [editGoalIndex, setEditGoalIndex] = useState(-1);
   const [titleError, setTitleError] = useState(false);
   const [desError, setDesError] = useState(false);
@@ -53,18 +54,24 @@ export default function Home() {
   const [delKey, setDelKey] = useState();
   const [delIndex, setDelIndex] = useState();
   const [fskey, setFsKey] = useState();
+  const [isCompletedGoal, setIsCompletedGoal] = useState(false);
+  const [compGoalId, setCompGoalId] = useState();
 
   const auth = getAuth(app);
   const id = auth.currentUser.uid;
   const email = auth.currentUser.email;
-  // console.log(id);
   const dispatch = useDispatch();
   const todos = useSelector(state => state.todos);
   const completeTodos = useSelector(state => state.completedTodos);
 
-  // console.log(todos);
-  // const usersCollection = firestore().collection('Users');
-  // const userDocument = firestore().collection('Users').doc(id);
+  useEffect(() => {
+    try {
+      fetchTodos();
+      // console.log(fskey);
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
 
   function validateTitleText() {
     if (goalTitle === '') {
@@ -85,7 +92,6 @@ export default function Home() {
     setenteredGoalText(obj.text);
     setgoalTitle(obj.title);
     setEditGoalIndex(idx);
-    setGoalKey(fskey);
   }
 
   function deleteGoal() {
@@ -98,6 +104,12 @@ export default function Home() {
     const docRef = doc(db, 'ToDo', email, 'ToDo-List', id);
     await deleteDoc(docRef);
   };
+  const deleteCompGoalOnCloud = async () => {
+    let id = compGoalId;
+    const docRef = doc(db, 'ToDo', email, 'ToDo-List', id);
+    await deleteDoc(docRef);
+  };
+
   const updateGoalOnCloud = async () => {
     let id = fskey;
     const data = {
@@ -114,6 +126,23 @@ export default function Home() {
       });
   };
 
+  // const completedGoalsOnCloud = async () => {
+  //   let id = compGoalId;
+  //   const data = {
+  //     isCompleted: isCompletedGoal,
+  //     // name: 'zaid',
+  //   };
+  //   const docAdd = doc(db, 'ToDo', email, 'ToDo-List', id);
+  //   // console.log(id);
+  //   await setDoc(docAdd, data, {merge: true})
+  //     .then(() => {
+  //       console.log('Goal Completed sucessfully');
+  //     })
+  //     .catch(error => {
+  //       console.log(error);
+  //     });
+  // };
+
   const addGoalsOnCloud = async () => {
     let listId = uuid.v4();
     const data = {
@@ -126,6 +155,7 @@ export default function Home() {
         id: listId,
         title: goalTitle,
         text: enteredGoalText,
+        isCompleted: false,
       });
       dispatch(addGoal(data));
       alert('Note successfully saved!');
@@ -155,11 +185,6 @@ export default function Home() {
       console.log(error);
     }
   };
-
-  useEffect(() => {
-    fetchTodos();
-    console.log(fskey);
-  }, []);
 
   function addGoalHandler() {
     if (editGoalIndex >= 0) {
@@ -192,8 +217,11 @@ export default function Home() {
 
   function completeGoal(itemData) {
     dispatch(addCompletedGoals(itemData));
-    dispatch(removeGoal(itemData.key));
-    alert('Goal added to completed goal List');
+    dispatch(removeGoal(itemData.id));
+    deleteCompGoalOnCloud();
+
+    // console.log(isCompletedGoal);
+    // alert('Goal added to completed goal List');
   }
 
   return (
@@ -263,7 +291,11 @@ export default function Home() {
                   setAlertModalVisible(!alertModalVisible);
                   // console.log(delKey);
                 }}
-                completeGoalOnpress={() => completeGoal(itemData.item)}
+                completeGoalOnpress={() => {
+                  completeGoal(itemData.item);
+                  setIsCompletedGoal(!isCompletedGoal);
+                  setCompGoalId(itemData.item.id);
+                }}
                 editGoalHandlerOnpress={() =>
                   editGoalHandler(
                     itemData.item,
