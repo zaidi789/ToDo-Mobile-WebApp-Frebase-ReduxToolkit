@@ -18,29 +18,33 @@ import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
 } from 'firebase/auth';
+import Loader from '../components/Loader';
 
 const isWeb = Platform.OS === 'web';
 export default function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigation = useNavigation();
+  const [isLoading, setIsLoading] = useState(false);
   const auth = getAuth(app);
 
   function handelRegister() {
     try {
+      setIsLoading(true);
       createUserWithEmailAndPassword(auth, email, password).then(
         userCrenditial => {
           const user = userCrenditial.user;
+          setIsLoading(false);
           sendEmailVerification(user);
           alert('email send sucessfully');
           navigation.navigate('Login');
         },
       );
-      then(() => {}).catch(error => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode);
-      });
+      // then(() => {}).catch(error => {
+      //   const errorCode = error.code;
+      //   const errorMessage = error.message;
+      //   console.log(errorCode);
+      // });
     } catch {
       alert('Email or Password is invalid');
     }
@@ -48,6 +52,7 @@ export default function Register() {
 
   return (
     <View style={styles.container}>
+      <Loader isLoading={isLoading} />
       <ImageBackground source={Images.Register} style={styles.backgroundImg}>
         <View style={styles.mainView}>
           <View style={{justifyContent: 'center', alignItems: 'center'}}>

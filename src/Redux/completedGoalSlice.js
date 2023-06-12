@@ -8,7 +8,9 @@ const completedGoalSlice = createSlice({
       state.push(action.payload);
     },
     removeCompletedGoals(state, action) {
-      return state.filter(item => item.key !== action.payload);
+      const index = action.payload;
+      // return state.filter(item => item.key !== action.payload);
+      state.splice(index, 1);
     },
   },
 });

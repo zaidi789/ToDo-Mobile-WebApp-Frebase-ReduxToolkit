@@ -15,7 +15,7 @@ export default function CompleteTaskList() {
   const [alertModalVisible, setAlertModalVisible] = useState(false);
 
   const dispatch = useDispatch();
-
+  // console.log(key);
   const completeTodos = useSelector(state => state.completedTodos);
 
   function DeleteAlert() {
@@ -43,8 +43,8 @@ export default function CompleteTaskList() {
       />
       <FlatList
         data={completeTodos}
-        keyExtractor={item => item.id}
         renderItem={itemData => {
+          // console.log(itemData);
           return (
             <View style={styles.flatListMainView}>
               <TextBox
@@ -53,8 +53,9 @@ export default function CompleteTaskList() {
                 name={'trash-2'}
                 color={'white'}
                 onPressDelete={() => {
-                  setKey(itemData.item.key);
+                  setKey(itemData.index);
                   setAlertModalVisible(!alertModalVisible);
+                  // console.log(itemData.index);
                 }}
               />
             </View>

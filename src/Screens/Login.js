@@ -14,22 +14,26 @@ import Button from '../components/Button';
 import {useNavigation} from '@react-navigation/native';
 import {getAuth, signInWithEmailAndPassword} from 'firebase/auth';
 import app from '../Firebase/config';
+import Loader from '../components/Loader';
 
 const isWeb = Platform.OS === 'web';
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const auth = getAuth(app);
   const navigation = useNavigation();
 
   function handelLogin() {
     try {
+      setIsLoading(true);
       signInWithEmailAndPassword(auth, email, password)
         .then(userCrenditial => {
           const user = userCrenditial.user;
+          setIsLoading(false);
           // user.emailVerified(true);
           if (user.emailVerified === true) {
-            alert('Login sucessfully');
+            // alert('Login sucessfully');
             navigation.navigate('Home');
           } else {
             alert('Please verify your email');
@@ -46,6 +50,7 @@ export default function Login() {
 
   return (
     <View style={styles.container}>
+      <Loader isLoading={isLoading} />
       <ImageBackground source={Images.Login} style={styles.backgroundImg}>
         <View style={styles.mainView}>
           <View style={{justifyContent: 'center', alignItems: 'center'}}>
