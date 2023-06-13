@@ -1,12 +1,5 @@
 import React, {useState} from 'react';
-import {
-  StyleSheet,
-  View,
-  FlatList,
-  Dimensions,
-  Alert,
-  Text,
-} from 'react-native';
+import {StyleSheet, View, FlatList, Dimensions} from 'react-native';
 import TextBox from '../components/TextBox';
 import {
   widthPercentageToDP as wp,
@@ -14,31 +7,33 @@ import {
 } from 'react-native-responsive-screen';
 import {Colors} from '../components/Colors';
 import {useDispatch, useSelector} from 'react-redux';
-// import {removeCompletedGoals} from '../Redux/completedGoalSlice';
 import CustomAlert from '../components/CustomAlert';
 import {removeGoal} from '../Redux/todoSlice';
+import {db} from '../Firebase/config';
+import {doc, deleteDoc} from 'firebase/firestore';
+import Loader from '../components/Loader';
+import {getAuth} from 'firebase/auth';
+import app from '../Firebase/config';
 
 export default function CompleteTaskList() {
-  const [key, setKey] = useState();
+  const [key, setKey] = useState('');
+  const [index, setIndex] = useState();
   const [alertModalVisible, setAlertModalVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const dispatch = useDispatch();
-  // console.log(key);
-  // const completeTodos = useSelector(state => state.todos);
-  // console.log(completeTodos);
+  const auth = getAuth(app);
+  const email = auth.currentUser.email;
+  const userId = auth.currentUser.uid;
+
   const completeTodos = useSelector(state => state.todos);
-  // console.log(completeTodos);
 
-  function DeleteAlert() {
-    dispatch(removeGoal(key));
-    deleteGoalOnCloud(key);
-
-    alert('Goal Deleted Sucessfully');
-  }
   const deleteGoalOnCloud = async () => {
+    console.log(key);
     let id = key;
-    const docRef = doc(db, 'ToDo', email, 'ToDo-List', id);
+    const docRef = doc(db, 'ToDo', userId, 'ToDo-List', id);
     setIsLoading(true);
+    dispatch(removeGoal(index));
     await deleteDoc(docRef)
       .then(() => {
         setIsLoading(false);
@@ -51,22 +46,17 @@ export default function CompleteTaskList() {
 
   return (
     <View style={styles.container}>
+      <Loader isLoading={isLoading} />
+
       <CustomAlert
         modalVisible={alertModalVisible}
         setModalVisible={setAlertModalVisible}
         onPressOK={() => {
-          DeleteAlert();
+          deleteGoalOnCloud();
           setAlertModalVisible(!alertModalVisible);
         }}
       />
-      <CustomAlert
-        modalVisible={alertModalVisible}
-        setModalVisible={setAlertModalVisible}
-        onPressOK={() => {
-          DeleteAlert();
-          setAlertModalVisible(!alertModalVisible);
-        }}
-      />
+
       <FlatList
         data={completeTodos}
         kekeyExtractor={item => item.id}
@@ -79,7 +69,8 @@ export default function CompleteTaskList() {
                 name={'trash-2'}
                 color={'white'}
                 onPressDelete={() => {
-                  setKey(itemData.item.id);
+                  setIndex(itemData.index);
+                  setKey(itemData.item.id, index);
                   setAlertModalVisible(!alertModalVisible);
                 }}
               />

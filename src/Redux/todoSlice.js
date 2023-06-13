@@ -8,29 +8,24 @@ const todoSlice = createSlice({
       state.push(action.payload);
     },
     removeGoal(state, action) {
-      // console.log(action.payload);
       const index = action.payload;
       state.splice(index, 1);
     },
     updateTodo(state, action) {
+      // console.log(action.payload);
       const index = state.findIndex(obj => obj.id == action.payload.id);
-      // console.log(index);
       if (index !== -1) {
         state[index] = {
           ...state[index],
           title: action.payload.title,
           text: action.payload.text,
+          isCompleted: action.payload.isCompleted,
         };
       }
     },
     fetchToDos(state, action) {
-      console.log(action.payload);
-
-      // const result = action.payload.filter(obj => obj.isCompleted !== true);
-      // console.log(result);
       const res = [...state, ...action.payload];
       return res;
-      // state.push(action.payload);
     },
   },
 });

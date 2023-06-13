@@ -4,7 +4,6 @@ import {
   Dimensions,
   FlatList,
   StyleSheet,
-  Text,
   View,
   Platform,
 } from 'react-native';
@@ -25,10 +24,7 @@ import {
   collection,
   setDoc,
   doc,
-  addDoc,
   getDocs,
-  getDoc,
-  getFirestore,
   updateDoc,
   deleteDoc,
 } from 'firebase/firestore';
@@ -55,16 +51,16 @@ export default function Home() {
   const [delIndex, setDelIndex] = useState();
   const [fskey, setFsKey] = useState();
   const [isCompletedGoal, setIsCompletedGoal] = useState(false);
-  const [compGoalId, setCompGoalId] = useState();
+  // const [compGoalId, setCompGoalId] = useState();
   const [isLoading, setIsLoading] = useState(false);
-  const [cGi, setCgi] = useState();
+  // const [cGi, setCgi] = useState();
 
   const auth = getAuth(app);
-  const id = auth.currentUser.uid;
+  const userId = auth.currentUser.uid;
   const email = auth.currentUser.email;
   const dispatch = useDispatch();
   const todos = useSelector(state => state.todos);
-  const completeTodos = useSelector(state => state.completedTodos);
+  // const completeTodos = useSelector(state => state.completedTodos);
 
   useEffect(() => {
     try {
@@ -73,6 +69,14 @@ export default function Home() {
       console.log(error);
     }
   }, []);
+  // function checkUser() {
+  //   let val = auth.currentUser;
+  //   if (val !== null) {
+  //     console.log('user is logged in');
+  //   } else {
+  //     console.log('User is not logged in');
+  //   }
+  // }
 
   function validateTitleText() {
     if (goalTitle === '') {
@@ -87,7 +91,6 @@ export default function Home() {
   }
 
   function editGoalHandler(obj, idx) {
-    // console.log(fskey);
     setIsVisible(true);
     setUpdateButton(true);
     setenteredGoalText(obj.text);
@@ -95,15 +98,11 @@ export default function Home() {
     setEditGoalIndex(idx);
   }
 
-  function deleteGoal() {
-    dispatch(removeGoal(delIndex));
-    deleteGoalOnCloud();
-    // alert('Goal Deleted Sucessfully');
-  }
   const deleteGoalOnCloud = async () => {
     let id = delKey;
-    const docRef = doc(db, 'ToDo', email, 'ToDo-List', id);
+    const docRef = doc(db, 'ToDo', userId, 'ToDo-List', id);
     setIsLoading(true);
+    dispatch(removeGoal(delIndex));
     await deleteDoc(docRef)
       .then(() => {
         setIsLoading(false);
@@ -115,11 +114,7 @@ export default function Home() {
   };
 
   const updateGoalOnCloud = async (id, data) => {
-    // const data = {
-    //   title: goalTitle,
-    //   text: enteredGoalText,
-    // };
-    const docRef = doc(db, 'ToDo', email, 'ToDo-List', id);
+    const docRef = doc(db, 'ToDo', userId, 'ToDo-List', id);
     setIsLoading(true);
     await updateDoc(docRef, data)
       .then(() => {
@@ -130,41 +125,6 @@ export default function Home() {
         alert(error);
       });
   };
-
-  // const markCompGoalOnCloud = async (id, data) => {
-  //   // let id = compGoalId;
-  //   // console.log(id);
-  //   // const data = {
-  //   //   isCompleted: true,
-  //   // };
-  //   const docRef = doc(db, 'ToDo', email, 'ToDo-List', id);
-  //   setIsLoading(true);
-  //   await updateDoc(docRef, data)
-  //     .then(() => {
-  //       setIsLoading(false);
-  //       alert('data updated');
-  //     })
-  //     .catch(error => {
-  //       alert(error);
-  //     });
-  // };
-
-  // const completedGoalsOnCloud = async () => {
-  //   let id = compGoalId;
-  //   const data = {
-  //     isCompleted: isCompletedGoal,
-  //     // name: 'zaid',
-  //   };
-  //   const docAdd = doc(db, 'ToDo', email, 'ToDo-List', id);
-  //   // console.log(id);
-  //   await setDoc(docAdd, data, {merge: true})
-  //     .then(() => {
-  //       console.log('Goal Completed sucessfully');
-  //     })
-  //     .catch(error => {
-  //       console.log(error);
-  //     });
-  // };
 
   const addGoalsOnCloud = async () => {
     let listId = uuid.v4();
@@ -177,7 +137,7 @@ export default function Home() {
     setIsLoading(true);
 
     try {
-      await setDoc(doc(db, 'ToDo', email, 'ToDo-List', listId), {
+      await setDoc(doc(db, 'ToDo', userId, 'ToDo-List', listId), {
         id: listId,
         title: goalTitle,
         text: enteredGoalText,
@@ -194,7 +154,7 @@ export default function Home() {
   const fetchTodos = async () => {
     setIsLoading(true);
     const querySnapshot = await getDocs(
-      collection(db, 'ToDo', email, 'ToDo-List'),
+      collection(db, 'ToDo', userId, 'ToDo-List'),
     );
     setIsLoading(false);
     const res = [];
@@ -208,9 +168,8 @@ export default function Home() {
         };
         res.push(data);
       });
-      // console.log(res);
+
       dispatch(fetchToDos(res));
-      // dispatch(fetchcompletedGoals(res));
     } catch (error) {
       console.log(error);
     }
@@ -238,32 +197,26 @@ export default function Home() {
       setIsVisible(!isVisible);
       setDesError(false);
       setTitleError(false);
-      // alert('Task Added Successfully');
     } else {
       alert('Please enter a todo to add. Blank notes cannot be added.');
     }
   }
-  // console.log(ftoDos);
 
   function completeGoal(item) {
-    // console.log(item);
-
     setIsLoading(true);
+    // console.log(item);
     try {
       const data = {
+        id: item.id,
         isCompleted: true,
       };
-      updateGoalOnCloud(item.id, data);
-      // dispatch(addCompletedGoals(item));
-      // dispatch(removeGoal(cGi));
-      // deleteCompGoalOnCloud();
+      dispatch(updateTodo(data));
+      // updateGoalOnCloud(item.id, data);
+
       setIsLoading(false);
     } catch (error) {
       console.log(error);
     }
-
-    // console.log(isCompletedGoal);
-    // alert('Goal added to completed goal List');
   }
 
   return (
@@ -273,7 +226,7 @@ export default function Home() {
         modalVisible={alertModalVisible}
         setModalVisible={setAlertModalVisible}
         onPressOK={() => {
-          deleteGoal();
+          deleteGoalOnCloud();
           setAlertModalVisible(!alertModalVisible);
         }}
       />
@@ -301,20 +254,6 @@ export default function Home() {
             onPress={() => navigation.navigate('CompletedGoalList')}
           />
         </View>
-
-        {/* <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginBottom: 10,
-            padding: 10,
-          }}>
-          <Button buttonName={'fetch data'} onPress={() => fetchTodos()} />
-        </View> */}
-
-        {/* <View style={styles.countView}>
-          <Text style={styles.countText}>Total Goals completed: {}</Text>
-        </View> */}
       </View>
       <View style={styles.flatList}>
         <FlatList
@@ -333,12 +272,8 @@ export default function Home() {
                   // console.log(delKey);
                 }}
                 completeGoalOnpress={() => {
-                  // setCompGoalId(itemData.item.id);
                   completeGoal(itemData.item);
-                  // console.log(itemData.item.id);
                   setIsCompletedGoal(!isCompletedGoal);
-                  // setCompGoalId(itemData.item.id);
-                  // setCgi(itemData.index);
                 }}
                 editGoalHandlerOnpress={() =>
                   editGoalHandler(
@@ -360,9 +295,6 @@ const styles = StyleSheet.create({
   container: {
     width: isWeb ? Dimensions.get('window').width : '100%',
     height: isWeb ? Dimensions.get('screen').height : '100%',
-    // justifyContent: 'center',
-    // alignItems: 'center',
-    // backgroundColor: 'green',
   },
   upperView: {
     width: wp('100%'),
@@ -382,9 +314,6 @@ const styles = StyleSheet.create({
   },
   flatList: {
     paddingBottom: 90,
-    // justifyContent: 'center',
-    // alignItems: 'center',
-    // backgroundColor: 'green',
   },
 
   countText: {

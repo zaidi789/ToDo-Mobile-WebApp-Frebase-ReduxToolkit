@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Dimensions,
   ImageBackground,
@@ -15,6 +15,8 @@ import {useNavigation} from '@react-navigation/native';
 import {getAuth, signInWithEmailAndPassword} from 'firebase/auth';
 import app from '../Firebase/config';
 import Loader from '../components/Loader';
+import {saveUserSession, getUserSession} from '../components/SplashScreen';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const isWeb = Platform.OS === 'web';
 export default function Login() {
@@ -29,6 +31,7 @@ export default function Login() {
       setIsLoading(true);
       signInWithEmailAndPassword(auth, email, password)
         .then(userCrenditial => {
+          // saveUserSession(true);
           const user = userCrenditial.user;
           setIsLoading(false);
           // user.emailVerified(true);
@@ -40,8 +43,8 @@ export default function Login() {
           }
         })
         .catch(error => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
+          // const errorCode = error.code;
+          // const errorMessage = error.message;
         });
     } catch (error) {
       alert('Email or Password is invalid');
