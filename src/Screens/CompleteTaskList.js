@@ -1,5 +1,12 @@
 import React, {useState} from 'react';
-import {StyleSheet, View, FlatList, Dimensions, Alert} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  FlatList,
+  Dimensions,
+  Alert,
+  Text,
+} from 'react-native';
 import TextBox from '../components/TextBox';
 import {
   widthPercentageToDP as wp,
@@ -7,8 +14,9 @@ import {
 } from 'react-native-responsive-screen';
 import {Colors} from '../components/Colors';
 import {useDispatch, useSelector} from 'react-redux';
-import {removeCompletedGoals} from '../Redux/completedGoalSlice';
+// import {removeCompletedGoals} from '../Redux/completedGoalSlice';
 import CustomAlert from '../components/CustomAlert';
+import {removeGoal} from '../Redux/todoSlice';
 
 export default function CompleteTaskList() {
   const [key, setKey] = useState();
@@ -16,12 +24,30 @@ export default function CompleteTaskList() {
 
   const dispatch = useDispatch();
   // console.log(key);
-  const completeTodos = useSelector(state => state.completedTodos);
+  // const completeTodos = useSelector(state => state.todos);
+  // console.log(completeTodos);
+  const completeTodos = useSelector(state => state.todos);
+  // console.log(completeTodos);
 
   function DeleteAlert() {
-    dispatch(removeCompletedGoals(key));
+    dispatch(removeGoal(key));
+    deleteGoalOnCloud(key);
+
     alert('Goal Deleted Sucessfully');
   }
+  const deleteGoalOnCloud = async () => {
+    let id = key;
+    const docRef = doc(db, 'ToDo', email, 'ToDo-List', id);
+    setIsLoading(true);
+    await deleteDoc(docRef)
+      .then(() => {
+        setIsLoading(false);
+        alert('Goal Deleted Sucessfully');
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
 
   return (
     <View style={styles.container}>
@@ -43,9 +69,9 @@ export default function CompleteTaskList() {
       />
       <FlatList
         data={completeTodos}
-        renderItem={itemData => {
-          // console.log(itemData);
-          return (
+        kekeyExtractor={item => item.id}
+        renderItem={itemData =>
+          !itemData?.item?.isCompleted ? null : (
             <View style={styles.flatListMainView}>
               <TextBox
                 outputTitle={itemData.item.title}
@@ -53,14 +79,13 @@ export default function CompleteTaskList() {
                 name={'trash-2'}
                 color={'white'}
                 onPressDelete={() => {
-                  setKey(itemData.index);
+                  setKey(itemData.item.id);
                   setAlertModalVisible(!alertModalVisible);
-                  // console.log(itemData.index);
                 }}
               />
             </View>
-          );
-        }}
+          )
+        }
       />
     </View>
   );
