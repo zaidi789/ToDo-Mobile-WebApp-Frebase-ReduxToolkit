@@ -24,6 +24,10 @@ const todoSlice = createSlice({
       }
     },
     fetchToDos(state, action) {
+      console.log(action.payload);
+
+      // const result = action.payload.filter(obj => obj.isCompleted !== true);
+      // console.log(result);
       const res = [...state, ...action.payload];
       return res;
       // state.push(action.payload);

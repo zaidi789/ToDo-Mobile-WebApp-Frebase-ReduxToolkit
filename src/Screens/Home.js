@@ -19,7 +19,7 @@ import {
 } from 'react-native-responsive-screen';
 import {Colors} from '../components/Colors';
 import {addGoal, removeGoal, updateTodo, fetchToDos} from '../Redux/todoSlice';
-import {addCompletedGoals} from '../Redux/completedGoalSlice';
+
 import CustomAlert from '../components/CustomAlert';
 import {
   collection,
@@ -113,14 +113,8 @@ export default function Home() {
         console.log(error);
       });
   };
-  const deleteCompGoalOnCloud = async () => {
-    let id = compGoalId;
-    const docRef = doc(db, 'ToDo', email, 'ToDo-List', id);
-    await deleteDoc(docRef);
-  };
 
-  const updateGoalOnCloud = async data => {
-    let id = fskey;
+  const updateGoalOnCloud = async (id, data) => {
     // const data = {
     //   title: goalTitle,
     //   text: enteredGoalText,
@@ -137,23 +131,23 @@ export default function Home() {
       });
   };
 
-  const markCompGoalOnCloud = async id => {
-    // let id = compGoalId;
-    // console.log(id);
-    const data = {
-      isCompleted: true,
-    };
-    const docRef = doc(db, 'ToDo', email, 'ToDo-List', id);
-    setIsLoading(true);
-    await updateDoc(docRef, data)
-      .then(() => {
-        setIsLoading(false);
-        alert('data updated');
-      })
-      .catch(error => {
-        alert(error);
-      });
-  };
+  // const markCompGoalOnCloud = async (id, data) => {
+  //   // let id = compGoalId;
+  //   // console.log(id);
+  //   // const data = {
+  //   //   isCompleted: true,
+  //   // };
+  //   const docRef = doc(db, 'ToDo', email, 'ToDo-List', id);
+  //   setIsLoading(true);
+  //   await updateDoc(docRef, data)
+  //     .then(() => {
+  //       setIsLoading(false);
+  //       alert('data updated');
+  //     })
+  //     .catch(error => {
+  //       alert(error);
+  //     });
+  // };
 
   // const completedGoalsOnCloud = async () => {
   //   let id = compGoalId;
@@ -210,11 +204,13 @@ export default function Home() {
           id: doc.id,
           title: doc.data().title,
           text: doc.data().text,
+          isCompleted: doc.data().isCompleted,
         };
         res.push(data);
-        // console.log(data.id);
       });
+      // console.log(res);
       dispatch(fetchToDos(res));
+      // dispatch(fetchcompletedGoals(res));
     } catch (error) {
       console.log(error);
     }
@@ -226,9 +222,10 @@ export default function Home() {
         title: goalTitle,
         text: enteredGoalText,
         id: fskey,
+        isCompleted: isCompletedGoal,
       };
       dispatch(updateTodo(updatedGoals));
-      updateGoalOnCloud(updatedGoals);
+      updateGoalOnCloud(updatedGoals.id, updatedGoals);
       setUpdateButton(false);
       setgoalTitle('');
       setenteredGoalText('');
@@ -253,7 +250,10 @@ export default function Home() {
 
     setIsLoading(true);
     try {
-      markCompGoalOnCloud(item.id);
+      const data = {
+        isCompleted: true,
+      };
+      updateGoalOnCloud(item.id, data);
       // dispatch(addCompletedGoals(item));
       // dispatch(removeGoal(cGi));
       // deleteCompGoalOnCloud();
@@ -312,22 +312,19 @@ export default function Home() {
           <Button buttonName={'fetch data'} onPress={() => fetchTodos()} />
         </View> */}
 
-        <View style={styles.countView}>
-          <Text style={styles.countText}>
-            Total Goals completed: {completeTodos.length}
-          </Text>
-        </View>
+        {/* <View style={styles.countView}>
+          <Text style={styles.countText}>Total Goals completed: {}</Text>
+        </View> */}
       </View>
       <View style={styles.flatList}>
         <FlatList
           data={todos}
-          renderItem={itemData => {
-            // console.log(itemData.item.id);
-            return (
+          kekeyExtractor={item => item.id}
+          renderItem={itemData =>
+            itemData?.item?.isCompleted ? null : (
               <RenderItem
-                outputTitle={itemData?.item?.title}
-                //make changes older was title and new is Title
-                outputDes={itemData?.item?.text}
+                outputTitle={itemData.item.title}
+                outputDes={itemData.item.text}
                 //older was text new is description
                 deleteAlertOnpress={() => {
                   setDelKey(itemData.item.id);
@@ -339,7 +336,7 @@ export default function Home() {
                   // setCompGoalId(itemData.item.id);
                   completeGoal(itemData.item);
                   // console.log(itemData.item.id);
-                  // setIsCompletedGoal(!isCompletedGoal);
+                  setIsCompletedGoal(!isCompletedGoal);
                   // setCompGoalId(itemData.item.id);
                   // setCgi(itemData.index);
                 }}
@@ -351,8 +348,8 @@ export default function Home() {
                   )
                 }
               />
-            );
-          }}
+            )
+          }
         />
       </View>
     </View>
