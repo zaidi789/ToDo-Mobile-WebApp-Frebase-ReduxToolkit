@@ -23,15 +23,18 @@ export default function CompleteTaskList() {
 
   const dispatch = useDispatch();
   const auth = getAuth(app);
-  const email = auth.currentUser.email;
-  const userId = auth.currentUser.uid;
+  // const email = auth.currentUser.email;
 
   const completeTodos = useSelector(state => state.todos);
+  const user = useSelector(state => state.user);
+  // console.log('Home=-----------------', user.email);
+  const email = user.email;
+  // console.log(completeTodos);
 
   const deleteGoalOnCloud = async () => {
     console.log(key);
     let id = key;
-    const docRef = doc(db, 'ToDo', userId, 'ToDo-List', id);
+    const docRef = doc(db, 'ToDo', email, 'ToDo-List', id);
     setIsLoading(true);
     dispatch(removeGoal(index));
     await deleteDoc(docRef)
@@ -95,6 +98,7 @@ const styles = StyleSheet.create({
   },
 
   flatListMainView: {
+    marginBottom: 25,
     margin: wp(2),
     padding: wp(2),
     borderRadius: wp(3),

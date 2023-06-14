@@ -17,22 +17,33 @@ import app from '../Firebase/config';
 import Loader from '../components/Loader';
 import {saveUserSession, getUserSession} from '../components/SplashScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useDispatch} from 'react-redux';
+import {addUser} from '../Redux/userDetails';
 
 const isWeb = Platform.OS === 'web';
 export default function Login() {
   const [email, setEmail] = useState('');
+  // const [user, setUser] = useState('');
+
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const auth = getAuth(app);
   const navigation = useNavigation();
-
+  const dispatch = useDispatch();
+  // setUser(auth.currentUser);
   function handelLogin() {
+    // const user = auth.currentUser;
     try {
       setIsLoading(true);
       signInWithEmailAndPassword(auth, email, password)
+        // const user = auth.currentUser
         .then(userCrenditial => {
           // saveUserSession(true);
           const user = userCrenditial.user;
+          // console.log(user);
+
+          dispatch(addUser(user));
+
           setIsLoading(false);
           // user.emailVerified(true);
           if (user.emailVerified === true) {

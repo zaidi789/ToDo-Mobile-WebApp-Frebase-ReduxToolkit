@@ -33,6 +33,7 @@ import {getAuth} from 'firebase/auth';
 import app from '../Firebase/config';
 import uuid from 'react-native-uuid';
 import Loader from '../components/Loader';
+import {current} from '@reduxjs/toolkit';
 // import firestore from '@react-native-firebase/firestore';
 
 const isWeb = Platform.OS === 'web';
@@ -56,11 +57,15 @@ export default function Home() {
   // const [cGi, setCgi] = useState();
 
   const auth = getAuth(app);
-  const userId = auth.currentUser.uid;
-  const email = auth.currentUser.email;
+  // const id = auth.currentUser.uid;
   const dispatch = useDispatch();
   const todos = useSelector(state => state.todos);
-  // const completeTodos = useSelector(state => state.completedTodos);
+  const user = useSelector(state => state.user);
+  // console.log('Home=-----------------', user.email);
+  const email = user.email;
+  // const token=getAuth().
+  // const user = auth.currentUser;
+  // console.log(user);
 
   useEffect(() => {
     try {
@@ -69,14 +74,6 @@ export default function Home() {
       console.log(error);
     }
   }, []);
-  // function checkUser() {
-  //   let val = auth.currentUser;
-  //   if (val !== null) {
-  //     console.log('user is logged in');
-  //   } else {
-  //     console.log('User is not logged in');
-  //   }
-  // }
 
   function validateTitleText() {
     if (goalTitle === '') {
@@ -100,7 +97,7 @@ export default function Home() {
 
   const deleteGoalOnCloud = async () => {
     let id = delKey;
-    const docRef = doc(db, 'ToDo', userId, 'ToDo-List', id);
+    const docRef = doc(db, 'ToDo', email, 'ToDo-List', id);
     setIsLoading(true);
     dispatch(removeGoal(delIndex));
     await deleteDoc(docRef)
@@ -114,7 +111,7 @@ export default function Home() {
   };
 
   const updateGoalOnCloud = async (id, data) => {
-    const docRef = doc(db, 'ToDo', userId, 'ToDo-List', id);
+    const docRef = doc(db, 'ToDo', email, 'ToDo-List', id);
     setIsLoading(true);
     await updateDoc(docRef, data)
       .then(() => {
@@ -137,7 +134,7 @@ export default function Home() {
     setIsLoading(true);
 
     try {
-      await setDoc(doc(db, 'ToDo', userId, 'ToDo-List', listId), {
+      await setDoc(doc(db, 'ToDo', email, 'ToDo-List', listId), {
         id: listId,
         title: goalTitle,
         text: enteredGoalText,
@@ -154,7 +151,7 @@ export default function Home() {
   const fetchTodos = async () => {
     setIsLoading(true);
     const querySnapshot = await getDocs(
-      collection(db, 'ToDo', userId, 'ToDo-List'),
+      collection(db, 'ToDo', email, 'ToDo-List'),
     );
     setIsLoading(false);
     const res = [];
@@ -207,11 +204,13 @@ export default function Home() {
     // console.log(item);
     try {
       const data = {
+        title: item.title,
+        text: item.text,
         id: item.id,
         isCompleted: true,
       };
       dispatch(updateTodo(data));
-      // updateGoalOnCloud(item.id, data);
+      updateGoalOnCloud(item.id, data);
 
       setIsLoading(false);
     } catch (error) {
