@@ -18,7 +18,6 @@ import {
 } from 'react-native-responsive-screen';
 import {Colors} from '../components/Colors';
 import {addGoal, removeGoal, updateTodo, fetchToDos} from '../Redux/todoSlice';
-
 import CustomAlert from '../components/CustomAlert';
 import {
   collection,
@@ -29,19 +28,14 @@ import {
   deleteDoc,
 } from 'firebase/firestore';
 import {db} from '../Firebase/config';
-import {getAuth} from 'firebase/auth';
-import app from '../Firebase/config';
 import uuid from 'react-native-uuid';
 import Loader from '../components/Loader';
-import {current} from '@reduxjs/toolkit';
-// import firestore from '@react-native-firebase/firestore';
 
 const isWeb = Platform.OS === 'web';
 export default function Home() {
   const navigation = useNavigation();
   const [enteredGoalText, setenteredGoalText] = useState('');
   const [goalTitle, setgoalTitle] = useState('');
-  // const [goalKey, setGoalKey] = useState();
   const [editGoalIndex, setEditGoalIndex] = useState(-1);
   const [titleError, setTitleError] = useState(false);
   const [desError, setDesError] = useState(false);
@@ -52,20 +46,11 @@ export default function Home() {
   const [delIndex, setDelIndex] = useState();
   const [fskey, setFsKey] = useState();
   const [isCompletedGoal, setIsCompletedGoal] = useState(false);
-  // const [compGoalId, setCompGoalId] = useState();
   const [isLoading, setIsLoading] = useState(false);
-  // const [cGi, setCgi] = useState();
-
-  const auth = getAuth(app);
-  // const id = auth.currentUser.uid;
   const dispatch = useDispatch();
   const todos = useSelector(state => state.todos);
   const user = useSelector(state => state.user);
-  // console.log('Home=-----------------', user.email);
   const email = user.email;
-  // const token=getAuth().
-  // const user = auth.currentUser;
-  // console.log(user);
 
   useEffect(() => {
     try {

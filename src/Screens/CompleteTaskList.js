@@ -23,13 +23,9 @@ export default function CompleteTaskList() {
 
   const dispatch = useDispatch();
   const auth = getAuth(app);
-  // const email = auth.currentUser.email;
-
   const completeTodos = useSelector(state => state.todos);
   const user = useSelector(state => state.user);
-  // console.log('Home=-----------------', user.email);
   const email = user.email;
-  // console.log(completeTodos);
 
   const deleteGoalOnCloud = async () => {
     console.log(key);

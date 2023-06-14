@@ -22,13 +22,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    // backgroundColor: 'black',
   },
   loader: {
     height: '40%',
     width: '50%',
     justifyContent: 'center',
     alignItems: 'center',
-    // backgroundColor: 'yellow',
   },
 });

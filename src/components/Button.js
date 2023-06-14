@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  StyleSheet,
-  Text,
-  Platform,
-  TouchableOpacity,
-  style,
-  stylesBtnText,
-} from 'react-native';
+import {StyleSheet, Text, Platform, TouchableOpacity} from 'react-native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,

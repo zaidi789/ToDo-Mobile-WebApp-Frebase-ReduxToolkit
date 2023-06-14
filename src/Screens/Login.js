@@ -30,33 +30,21 @@ export default function Login() {
   const auth = getAuth(app);
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  // setUser(auth.currentUser);
   function handelLogin() {
-    // const user = auth.currentUser;
     try {
       setIsLoading(true);
       signInWithEmailAndPassword(auth, email, password)
-        // const user = auth.currentUser
         .then(userCrenditial => {
-          // saveUserSession(true);
           const user = userCrenditial.user;
-          // console.log(user);
-
           dispatch(addUser(user));
-
           setIsLoading(false);
-          // user.emailVerified(true);
           if (user.emailVerified === true) {
-            // alert('Login sucessfully');
             navigation.navigate('Home');
           } else {
             alert('Please verify your email');
           }
         })
-        .catch(error => {
-          // const errorCode = error.code;
-          // const errorMessage = error.message;
-        });
+        .catch(error => {});
     } catch (error) {
       alert('Email or Password is invalid');
     }

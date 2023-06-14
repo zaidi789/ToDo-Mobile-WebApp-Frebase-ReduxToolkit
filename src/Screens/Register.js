@@ -40,11 +40,6 @@ export default function Register() {
           navigation.navigate('Login');
         },
       );
-      // then(() => {}).catch(error => {
-      //   const errorCode = error.code;
-      //   const errorMessage = error.message;
-      //   console.log(errorCode);
-      // });
     } catch {
       alert('Email or Password is invalid');
     }

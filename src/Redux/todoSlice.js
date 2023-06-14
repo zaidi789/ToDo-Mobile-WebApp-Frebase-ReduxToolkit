@@ -12,7 +12,6 @@ const todoSlice = createSlice({
       state.splice(index, 1);
     },
     updateTodo(state, action) {
-      // console.log(action.payload);
       const index = state.findIndex(obj => obj.id == action.payload.id);
       if (index !== -1) {
         state[index] = {

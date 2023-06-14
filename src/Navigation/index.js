@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {NavigationContainer, useNavigation} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Home from '../Screens/Home';
@@ -7,39 +7,18 @@ import Login from '../Screens/Login';
 import Register from '../Screens/Register';
 import {useDispatch, useSelector} from 'react-redux';
 import Button from '../components/Button';
-import {getAuth, signOut} from 'firebase/auth';
-import app from '../Firebase/config';
-import {Alert} from 'react-native';
 import {removeUser} from '../Redux/userDetails';
 
 const Stack = createNativeStackNavigator();
 
 export default function Nav() {
   const user = useSelector(state => state.user);
-  const auth = getAuth();
   const dispatch = useDispatch();
-  console.log('index-----', auth);
-  // console.log('index---------------', user);
-  // const settNullValue = () => {
-  //   user !== null ? setIsNul(false) : setIsNul(true);
-  // };
-
-  // useEffect(() => {
-  //   settNullValue();
-  // });
   const handelLogout = () => {
     const data = {};
     try {
       dispatch(removeUser(data));
       alert('Logout Sucessfully');
-
-      // // signOut().then(() => {
-      // //   () => {
-      // //     alert('Logout sucessfully');
-      // //     console.log('error');
-      // //     // use.navigate('Login');
-      // //   };
-      // });
     } catch (error) {
       console.log('error', error);
     }
@@ -59,12 +38,7 @@ export default function Nav() {
             component={Home}
             options={{
               headerRight: () => (
-                <Button
-                  onPress={() => handelLogout()}
-                  buttonName="Logout"
-                  // style={{}}
-                  // color="#fff"
-                />
+                <Button onPress={() => handelLogout()} buttonName="Logout" />
               ),
             }}
           />
